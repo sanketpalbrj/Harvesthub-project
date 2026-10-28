@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HarvestHub - Your AI Harvesting Companion</title>
+    <!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="./static/frontend/assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+     <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-decoration-none" href="#home" onclick="showSection('home')">
+                    <i class="bi bi-wheat fs-3 text-warning"></i>
+                    <span class="tracking-tight text-white">HarvestHub</span>
+                    <span class="badge bg-warning text-dark text-uppercase ms-1" style="font-size: 0.65rem;">AI Companion</span>
+                </a>
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#harvestNavbar" aria-controls="harvestNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="harvestNavbar">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="nav-home" href="#home" onclick="showSection('home')"> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-crop" href="./cropAi.HTML"> Crop AI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-fertilizer" href="#fertilizer" onclick="showSection('fertilizer')"></i> Fertilizer Calc</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-marketplace" href="#marketplace" onclick="showSection('marketplace')"> Marketplace</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-chat" href="#chat" onclick="showSection('chat')">Chat with AI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-weather" href="#weather" onclick="showSection('weather')"></i> Field Weather</a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center ms-lg-3 gap-2 mt-2 mt-lg-0">
+                        <!-- Cart Trigger Button -->
+                        <button class="btn btn-warning text-dark fw-bold position-relative px-3 py-2 shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                        </button>
+                        <!-- Profile Modal Trigger Button -->
+                        <button class="btn btn-outline-light px-3 py-2 fw-medium" type="button" data-bs-toggle="modal" data-bs-target="#profileModal">
+                            <i class="bi bi-person-circle me-1"></i> Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section id="section-home" class="app-section active-section">
+            <div class="hero-section position-relative text-white py-5 px-3" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./static/frontend/assets/images/f45460cf253f39e0574d12e18700bedc.jpg') no-repeat center center; background-size: cover;">
+    <div class="hero-content container text-center py-5">
+        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-3 text-uppercase fw-bold fs-6">
+            <i class="bi bi-stars me-1"></i> Next-Gen Smart Agriculture
+        </span>
+        <h1 class="display-3 fw-bold mb-3 text-white">Grow Smarter with HarvestHub</h1>
+        <p class="lead mb-4 text-light mx-auto" style="max-width: 800px;">
+            Empowering farmers with AI-driven crop predictions, precise fertilizer recommendations, and a direct marketplace for premium agricultural inputs.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <button class="btn btn-warning btn-lg text-dark fw-bold px-4 py-3 shadow" onclick="showSection('marketplace')">
+                <i class="bi bi-shop me-2"></i> Explore Fertilizers
+            </button>
+            <button class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold" onclick="showSection('crop')">
+                <i class="bi bi-robot me-2"></i> Try AI Companion
+            </button>
+        </div>
+    </div>
+    </div>
+
+            <div class="container py-5 my-4">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-success">Why Choose HarvestHub?</h2>
+                    <p class="text-muted">Everything you need to maximize farm yield and profitability in one platform.</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4">
+                            <div class="card-body">
+                                <div class="bg-success bg-opacity-15 text-dark rounded-circle d-inline-flex p-3 fs-3 mb-3">
+                                    <i class="bi bi-cpu-fill"></i>
+                                </div>
+                                <h4 class="fw-bold h5">AI Crop Recommendation</h4>
+                                <p class="text-muted small">Input your soil NPK, pH, temperature, and rainfall to instantly discover the most profitable crop to cultivate.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4">
+                            <div class="card-body">
+                                <div class="bg-warning bg-opacity-15 text-dark rounded-circle d-inline-flex p-3 fs-3 mb-3">
+                                    <i class="bi bi-shop"></i></i>
+                                </div>
+                                <h4 class="fw-bold h5">Certified Fertilizer Store</h4>
+                                <p class="text-muted small">Purchase verified high-grade fertilizers like Urea, NPK 19:19:19, DAP, and organic compost with doorstep delivery.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-4">
+                            <div class="card-body">
+                                <div class="bg-success bg-opacity-15 text-dark rounded-circle d-inline-flex p-3 fs-3 mb-3">
+                                    <i class="bi bi-cloud-sun-fill"></i></i>
+                                </div>
+                                <h4 class="fw-bold h5">Real-time Field Weather</h4>
+                                <p class="text-muted small">Monitor hyper-local temperature, humidity, wind speed, and get rain alerts to time your irrigation and sowing.</p>
+                            </div>
+                        </div>
+                    </div>                  
+                </div>
+            </div>
+        </section>
+
+
+    <div class="container my-5">
+        <h2 class="ptitle mb-4">Products & Fertilizers</h2>
+
+        <div class="row g-4">
+            <!-- Product 1 -->
+             {% for p in myproducts %}
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top" src="./static/frontend/assets/images/{{p.4}}" alt="Urea">
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="card-title">{{p.1}}</h4>
+                        <p class="card-text text-success fw-bold">Rs. {{p.2}}</p>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small">Quantity:</label>
+                            <input type="number" class="form-control" name="qty" min="1" value="1" />
+                        </div>
+                        <a href="#" class="btn btn-success mt-auto">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Product 2 -->
+           
+
+            <!-- Product 3 -->
+           
+
+            <!-- Product 4: MOP -->
+            
+        </div>
+        <div class="view-all"><a href="#marketplace">View all></a></div>
+    </div>
+
+    <!-- Crop AI banner -->
+
+    <div class="container cropai-banner p-5 my-5 border rounded-4 shadow-sm">
+        <div class="row align-items-center h-100">
+            <div class="col-lg-7 mb-4 mb-lg-0">
+                <span class="badge cropai-banner-heading px-3 py-2 mb-3 rounded-pill text-uppercase fw-bold"><i class="bi bi-cpu me-1"></i>AI Powered Crop Analysis</span>
+                <h2 class="display-6 fw-bold text-dark mb-3">Smart Crop & Soil Analysis</h2>
+                <p class="cropai-banner-text text-muted lead mb-4">Unsure about which plant will grow better? Upload your Soil lab test report or enter manually to get instant, AI driven recommendations.</p>
+            </div>
+            <div class="col-lg-5 text-center">
+                <div class="bg-white p-4 rounded-4 shadow-sm border border-success border-opacity-25">
+                    <div class="mb-3">
+                    <i class="bi bi-file-earmark-spreadsheet text-success display-4"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Instant Soil Intelligence</h5>
+                <p class="text-muted small mb-3">Analyzes Nitrogen, Phosphorus, Potassium (NPK), pH balance, and local weather patterns.</p>
+                <!-- <div class="badge bg-success bg-opacity-20 text-success px-3 py-2 rounded-pill">
+                    <i class="bi bi-check-circle-fill me-1"></i> 95% Prediction Accuracy
+                </div> -->
+                <a href="./cropAI.HTML" data-bs-toggle="modal" class="btn btn-success btn-lg px-4 py-3 shadow-sm d-flex text-center align-items-center justify-content-center">
+                    <i class="bi bi-cloud-arrow-up-fill me-2 fs-5"></i> Upload Soil Report or Enter Details Manually
+                </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feertilizer Calculator Banner -->
+
+    <div class="container fertilizer-calc-banner p-5 my-5 border rounded-4 shadow-sm">
+        <div class="row align-items-center h-100">
+            <div class="col-lg-7 mb-4 mb-lg-0">
+                <span class="badge fertilizer-calc-banner-heading bg-success px-3 py-2 mb-3 rounded-pill text-uppercase text-white fw-bold"><i class="bi bi-bar-chart-line-fill"></i> AI Powered Fertilizer Calculator</span>
+                <h2 class="display-6 fw-bold text-dark mb-3">Smart Crop Specific Fertilizer Calculation</h2>
+                <p class="cropai-banner-text text-muted lead mb-4">Not sure what your crops are lacking? Calculate precise nutrient needs and get fertilizers delivered at your doorstep with one go!</p>
+            </div>
+            <div class="col-lg-5 text-center">
+                <div class="bg-white p-4 rounded-4 shadow-sm border border-success border-opacity-25">
+                    <div class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-leaf-fill text-success" viewBox="0 0 16 16">
+                            <path d="M1.4 1.7c.217.289.65.84 1.725 1.274 1.093.44 2.885.774 5.834.528 2.02-.168 3.431.51 4.326 1.556C14.161 6.082 14.5 7.41 14.5 8.5q0 .344-.027.734C13.387 8.252 11.877 7.76 10.39 7.5c-2.016-.288-4.188-.445-5.59-2.045-.142-.162-.402-.102-.379.112.108.985 1.104 1.82 1.844 2.308 2.37 1.566 5.772-.118 7.6 3.071.505.8 1.374 2.7 1.75 4.292.07.298-.066.611-.354.715a.7.7 0 0 1-.161.042 1 1 0 0 1-1.08-.794c-.13-.97-.396-1.913-.868-2.77C12.173 13.386 10.565 14 8 14c-1.854 0-3.32-.544-4.45-1.435-1.124-.887-1.889-2.095-2.39-3.383-1-2.562-1-5.536-.65-7.28L.73.806z"/>
+                        </svg>
+                    </div>
+                    <p class="text-muted small mb-3">From instant AI Calculation to your doorstep in just one tap.</p>
+                    <a href="./fertilizer.html" data-bs-toggle="modal" class="btn btn-success btn-lg px-4 py-3 shadow-sm d-flex text-center align-items-center justify-content-center">
+                    <i class="bi bi-bookmark-check-fill me-2 fs-5"></i>Calculate which is best for you
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat with AI Banner -->
+
+    <div class="container chatbot-banner p-4 p-md-5 my-4 my-md-5 rounded-4 shadow-lg position-relative overflow-hidden">
+        <div class="position-absolute chatbot-banner-glow-bg top-0 end-0 rounded-circle bg-white opacity-25 d-none d-md-block"></div>
+
+        <div class="row align-items-center h-100 position-relative" style="z-index: 1;">
+            <div class="col-lg-7 text-center text-lg-start mb-4 mb-lg-0">
+                <span class="badge bg-warning text-dark px-3 py-2 mb-3 rounded-pill text-uppercase fw-bold shadow-sm">
+                    <i class="bi bi-robot me-1"></i> Meet Your AI Agronomist
+                </span>
+                <h2 class="display-6 fw-bold text-dark mb-3">Got Farming Questions? Chat with Harvest Buddy!</h2>
+                <p class="cropai-banner-text text-muted lead mb-4">Stuck with crop pests, irrigation timings, or fertilizer doses? Get instant, friendly expert advice right from our AI Companion.</p>
+            
+                <div class="d-inline-flex align-items-center bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-semibold border border-success border-opacity-25 shadow-sm">
+                    <span class="spinner-grow spinner-grow-sm text-success me-2" role="status"></span>
+                    Ask me anything!
+            </div>
+        </div>
+
+        <div class="col-lg-5 text-center">
+            <div class="mascot-card-3d p-4 rounded-4 border-0 d-inline-block position-relative w-100" >
+                <img src="./static/frontend/assets/images/mascot.png" alt="chatbot-mascot" class="img-fluid mb-3 floating-mascot">
+                
+                <h5 class="fw-bold text-dark mb-1">Harvest Buddy</h5>
+                <p class="text-muted small mb-3">Online & Ready to Help 24/7</p>
+                
+                <div class="d-flex flex-wrap justify-content-center">
+                    <a href="./chat.html" data-bs-toggle="modal" class="btn btn-dark btn-lg rounded-pill px-3 py-3 shadow d-flex text-center align-items-center justify-content-center fw-bold">
+                        <i class="bi bi-chat-dots-fill text-warning me-2 fs-5"></i>Start Chatting Now!
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+     <!-- Weather Banner -->
+
+    <div class="container weather-banner p-5 my-4 border rounded-4 shadow-sm">
+        <div class="weather-card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="weather-card-body p-4 p-md-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 mb-3 mb-lg-0 text-center text-lg-start">
+                            <span class="badge detect-location-badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2 fw-semibold border border-success border-opacity-25 shadow-sm mb-3 me-2"><i class="bi bi-geo-alt-fill"></i>
+                            Detecting Location...</span>
+                        <h2 class="display-6 fw-bold text-dark mb-3">Field Weather Dashboard</h2>
+                        <p class="cropai-banner-text text-muted lead mb-4">Fetching live meteorological data for optimized farming...</p>
+                    </div>
+
+                    <div class="col-lg-5 text-center">
+                        <div class="bg-white p-4 rounded-4 shadow-sm border border-success border-opacity-25">
+                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 120 120">
+                                <path d="M65.5,28h-11V10h11V28z M65.5,99h-11v18h11V99z M109.082,41.513l-5.5-9.526l-15.588,9l5.5,9.526 L109.082,41.513z M32.006,86.013l-5.5-9.526l-15.588,9l5.5,9.526L32.006,86.013z M26.506,50.513l5.5-9.526l-15.588-9l-5.5,9.526 L26.506,50.513z M103.582,95.013l5.5-9.526l-15.588-9l-5.5,9.526L103.582,95.013z M91.513,19.918l-9.526-5.5l-9,15.588l9.526,5.5 L91.513,19.918z M48.767,93.533l-9.526-5.5l-10.754,19.049l9.526,5.5L48.767,93.533z M37.487,35.506l9.526-5.5l-9-15.588 l-9.526,5.5L37.487,35.506z M81.987,112.582l9.526-5.5L81.312,89.414l-9.526,5.5L81.987,112.582z M113.5,69V58h-18v11H113.5z M24.5,69V58h-18v11H24.5z" opacity=".35"></path><path fill="#ffa400" d="M65.5,24h-11V6h11V24z M65.5,95h-11v18h11V95z M109.082,37.513l-5.5-9.526l-15.588,9l5.5,9.526 L109.082,37.513z M32.006,82.013l-5.5-9.526l-15.588,9l5.5,9.526L32.006,82.013z M26.506,46.513l5.5-9.526l-15.588-9l-5.5,9.526 L26.506,46.513z M103.582,91.013l5.5-9.526l-15.588-9l-5.5,9.526L103.582,91.013z M91.513,15.918l-9.526-5.5l-9,15.588l9.526,5.5 L91.513,15.918z M47.013,92.994l-9.526-5.5l-9,15.588l9.526,5.5L47.013,92.994z M37.487,31.506l9.526-5.5l-9-15.588l-9.526,5.5 L37.487,31.506z M81.987,108.582l9.526-5.5l-9-15.588l-9.526,5.5L81.987,108.582z M113.5,65V54h-18v11H113.5z M24.5,65V54h-18v11 H24.5z"></path><ellipse cx="60" cy="63.517" opacity=".35" rx="38" ry="38.5"></ellipse><ellipse cx="60" cy="59.517" fill="#ffc400" rx="38" ry="38.5"></ellipse>
+                            </svg>
+                            <div class="text-start text-center">
+                                <h2 class="mb-0 fw-bold text-dark" id="weather-temp">--°C</h2>
+                                <p class="text-muted small mb-0 fw-semibold" id="weather-condition">Loading conditions...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+        </div>
+    </div>
+
+
+   
+</body>
+
+ <!-- Footer Part -->
+   
+<footer class="py-4 text-center">
+        <div class="container">
+            <p class="mb-1 fw-semibold">&copy; 2026 HarvestHub - Your AI Harvesting Companion. All rights reserved.</p>
+            <p class="small mb-0">Empowering sustainable farming through intelligent technologies.</p>
+        </div>
+</footer>
+</html>
