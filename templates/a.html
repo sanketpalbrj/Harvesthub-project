@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,13 +11,232 @@
 <!-- Latest compiled JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link href="./static/frontend/assets/css/style.css" rel="stylesheet">
+<link href="/static/frontend/assets/css/style.css" rel="stylesheet">
 </head>
+<script>
+function openNoupeChat(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    const chatBtn = document.querySelector('.noupe-chat-button');
+    if (chatBtn) {
+        chatBtn.click();
+    } else {
+        console.warn("Noupe chat button is still loading.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const isLoggedIn = "{{ request.session.custid|yesno:'true,false' }}" === "true";
+
+    if (!isLoggedIn) {
+        const loginModal = new bootstrap.Modal(document.getElementById('login'));
+        // Inside if (!isLoggedIn) { ... }
+        if (new URLSearchParams(window.location.search).get('show_login') === '1') {
+            loginModal.show();
+}
+
+        document.querySelectorAll('.auth-required').forEach(el => {
+            // 1. Deactivated visual appearance
+           if (el.classList.contains('nav-link') && !el.classList.contains('no-dim')) {
+                el.classList.add('opacity-50');
+            }
+            el.title = "Login required";
+        
+            // 2. Prevent offcanvas/other Bootstrap toggles from firing
+            el.removeAttribute('data-bs-toggle');
+
+            // 3. Intercept click (capture phase runs BEFORE inline onclick="showSection(...)")
+            el.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                loginModal.show();
+            }, true);
+        });
+    }
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('emailInput');
+    const clearEmailBtn = document.getElementById('clearEmail');
+    const emailError = document.getElementById('email-error');
+    const emailErrorText = document.getElementById('email-error-text');
+
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordError = document.getElementById('password-error');
+    const passwordErrorText = document.getElementById('password-error-text');
+
+    function clearAllErrors() {
+        emailInput.classList.remove('input-invalid');
+        passwordInput.classList.remove('input-invalid');
+        emailError.classList.add('d-none');
+        passwordError.classList.add('d-none');
+    }
+
+    emailInput.addEventListener('input', function () {
+        clearEmailBtn.classList.toggle('d-none', emailInput.value.length === 0);
+        clearAllErrors();
+    });
+
+    clearEmailBtn.addEventListener('click', function () {
+        emailInput.value = '';
+        clearEmailBtn.classList.add('d-none');
+        clearAllErrors();
+        emailInput.focus();
+    });
+
+    passwordInput.addEventListener('input', clearAllErrors);
+
+    loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearAllErrors();
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // 1. Check email format first
+        if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+            emailInput.classList.add('input-invalid');
+            clearEmailBtn.classList.toggle('d-none', emailInput.value.length === 0);
+            emailErrorText.textContent = "Invalid email address!";
+            emailError.classList.remove('d-none');
+            return;
+        }
+
+        // 2. Check password is not blank
+        if (!passwordInput.value.trim()) {
+            passwordInput.classList.add('input-invalid');
+            passwordErrorText.textContent = "Enter your password";
+            passwordError.classList.remove('d-none');
+            return;
+        }
+
+        // 3. Check credentials against Django logincust view
+        fetch(loginForm.action, {
+            method: 'POST',
+            body: new FormData(loginForm)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = window.location.pathname;
+            } else {
+                // Highlight both inputs in red & show "Invalid email or password"
+                emailInput.classList.add('input-invalid');
+                passwordInput.classList.add('input-invalid');
+                clearEmailBtn.classList.remove('d-none');
+                passwordErrorText.textContent = "Invalid password!";
+                passwordError.classList.remove('d-none');
+            }
+        });
+    });
+const regForm = document.getElementById('regForm');
+    if (regForm) {
+        // Use querySelector inside regForm so duplicate IDs on the page can't break it
+        const regEmail = regForm.querySelector('[name="custemail"]');
+        const regEmailErr = document.getElementById('reg-email-error');
+        const regEmailErrText = document.getElementById('reg-email-error-text');
+
+        const regPhone = regForm.querySelector('[name="custphone"]');
+        const regPhoneErr = document.getElementById('reg-phone-error');
+        const regPhoneErrText = document.getElementById('reg-phone-error-text');
+        const pincodeInput = regForm.querySelector('[name="custpincode"]');
+        const cityInput = regForm.querySelector('[name="custcity"]');
+        const stateInput = regForm.querySelector('[name="custstate"]');
+        const pincodeStatus = document.getElementById('pincode-status');
+
+if (pincodeInput) {
+    pincodeInput.addEventListener('input', function () {
+        // Strip non-digits
+        this.value = this.value.replace(/\D/g, '');
+        pincodeInput.classList.remove('is-invalid');
+        pincodeStatus.classList.add('d-none');
+
+        if (this.value.length === 6) {
+            pincodeStatus.textContent = "Fetching location...";
+            pincodeStatus.className = "small mt-1 text-muted";
+
+            fetch(`https://api.postalpincode.in/pincode/${this.value}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
+                        const po = data[0].PostOffice[0];
+                        cityInput.value = po.District;
+                        stateInput.value = po.State;
+                        pincodeStatus.classList.add('d-none');
+                    } else {
+                        cityInput.value = "";
+                        stateInput.value = "";
+                        pincodeInput.classList.add('is-invalid');
+                        pincodeStatus.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Invalid Indian pincode';
+                        pincodeStatus.className = "small mt-1 text-danger d-flex align-items-center gap-1";
+                    }
+                })
+                .catch(() => {
+                    // If offline or API unreachable, let user type City & State manually
+                    pincodeStatus.classList.add('d-none');
+                });
+        }
+    });
+}
+
+        function clearRegErrors() {
+            if (regEmail) regEmail.classList.remove('is-invalid');
+            if (regPhone) regPhone.classList.remove('is-invalid');
+            if (regEmailErr) {
+                regEmailErr.classList.add('d-none');
+                regEmailErr.classList.remove('d-flex');
+            }
+            if (regPhoneErr) {
+                regPhoneErr.classList.add('d-none');
+                regPhoneErr.classList.remove('d-flex');
+            }
+        }
+
+        if (regEmail) regEmail.addEventListener('input', clearRegErrors);
+        if (regPhone) regPhone.addEventListener('input', clearRegErrors);
+
+        regForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            clearRegErrors();
+
+            // Trigger native required checks for blank fields first
+            if (!regForm.checkValidity()) {
+                regForm.reportValidity();
+                return;
+            }
+
+            fetch(regForm.action, {
+                method: 'POST',
+                body: new FormData(regForm)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = window.location.pathname;
+                } else if (data.field === 'email') {
+                    regEmail.classList.add('is-invalid');
+                    regEmailErrText.textContent = data.error;
+                    regEmailErr.classList.remove('d-none');
+                    regEmailErr.classList.add('d-flex');
+                    regEmail.focus();
+                } else if (data.field === 'phone') {
+                    regPhone.classList.add('is-invalid');
+                    regPhoneErrText.textContent = data.error;
+                    regPhoneErr.classList.remove('d-none');
+                    regPhoneErr.classList.add('d-flex');
+                    regPhone.focus();
+                }
+            });
+        });
+    }
+});
+
+</script>
 <body>
      <header>
         <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-decoration-none" href="#home" onclick="showSection('home')">
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-decoration-none" href="/" onclick="showSection('home')">
                     <i class="bi bi-wheat fs-3 text-warning"></i>
                     <span class="tracking-tight text-white">HarvestHub</span>
                     <span class="badge bg-warning text-dark text-uppercase ms-1" style="font-size: 0.65rem;">AI Companion</span>
@@ -28,35 +248,60 @@
                 <div class="collapse navbar-collapse" id="harvestNavbar">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1">
                         <li class="nav-item">
-                            <a class="nav-link active" id="nav-home" href="#home" onclick="showSection('home')"> Home</a>
+                            <a class="nav-link active" id="nav-home" href="/" onclick="showSection('home')"> Home</a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link auth-required" id="nav-crop" href="./cropAi.HTML"> Crop AI</a>
+                        </li> -->
+                        <li class="nav-item">
+                            <a class="nav-link auth-required" id="nav-fertilizer" href="/prediction/" onclick="showSection('fertilizer')"></i> Fertilizer Calculator</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="nav-crop" href="./cropAi.HTML"> Crop AI</a>
+                            <a class="nav-link auth-required" id="nav-marketplace" href="/marketplace/" onclick="showSection('marketplace')"> Marketplace</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="nav-fertilizer" href="#fertilizer" onclick="showSection('fertilizer')"></i> Fertilizer Calc</a>
+                            <a class="nav-link" id="nav-chat" href="javascript:void(0);" onclick="openNoupeChat(event)">Chat with AI</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="nav-marketplace" href="#marketplace" onclick="showSection('marketplace')"> Marketplace</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="nav-chat" href="#chat" onclick="showSection('chat')">Chat with AI</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="nav-weather" href="#weather" onclick="showSection('weather')"></i> Field Weather</a>
+                            <a class="nav-link auth-required" id="nav-weather" href="/#weather" onclick="showSection('weather')"></i> Field Weather</a>
                         </li>
                     </ul>
 
                     <div class="d-flex align-items-center ms-lg-3 gap-2 mt-2 mt-lg-0">
                         <!-- Cart Trigger Button -->
-                        <button class="btn btn-warning text-dark fw-bold position-relative px-3 py-2 shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
-                            <i class="bi bi-cart3 fs-5"></i>
-                            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-                        </button>
+                        <a href="/cart/" class="btn btn-warning text-dark fw-bold position-relative px-3 py-2 shadow-sm auth-required">
+    <i class="bi bi-cart3 fs-5"></i>
+    <!-- <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ cart_count|default:0 }}
+    </span> -->
+</a>
                         <!-- Profile Modal Trigger Button -->
-                        <button class="btn btn-outline-light px-3 py-2 fw-medium" type="button" data-bs-toggle="modal" data-bs-target="#profileModal">
-                            <i class="bi bi-person-circle me-1"></i> Profile
+                        {% if request.session.custid %}
+                        <!-- Logged in state: Clean dropdown without arrow -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light fw-bold d-flex align-items-center gap-2" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> {{ request.session.custname }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2" href="/myorders/">
+                                        <i class="bi bi-bag-check me-2 text-success"></i> My Orders
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger fw-semibold" href="/clogout/">
+                                        <i class="bi bi-power me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% else %}
+                        <!-- Profile Modal Trigger Button -->
+                         <button class="btn btn-outline-light px-3 py-2 fw-medium" type="button" data-bs-toggle="modal" data-bs-target="#login">
+                            <i class="bi bi-person-circle me-1"></i> Login/Register
                         </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -74,12 +319,12 @@
             Empowering farmers with AI-driven crop predictions, precise fertilizer recommendations, and a direct marketplace for premium agricultural inputs.
         </p>
         <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <button class="btn btn-warning btn-lg text-dark fw-bold px-4 py-3 shadow" onclick="showSection('marketplace')">
+            <a href="/marketplace/" class="btn btn-warning btn-lg text-dark fw-bold px-4 py-3 shadow auth-required" onclick="showSection('marketplace')">
                 <i class="bi bi-shop me-2"></i> Explore Fertilizers
-            </button>
-            <button class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold" onclick="showSection('crop')">
+            </a>
+            <a class="btn btn-outline-light btn-lg px-4 py-3 fw-semibold" onclick="openNoupeChat(event)" href="javascript:void(0);">
                 <i class="bi bi-robot me-2"></i> Try AI Companion
-            </button>
+            </a>
         </div>
     </div>
     </div>
@@ -96,8 +341,8 @@
                                 <div class="bg-success bg-opacity-15 text-dark rounded-circle d-inline-flex p-3 fs-3 mb-3">
                                     <i class="bi bi-cpu-fill"></i>
                                 </div>
-                                <h4 class="fw-bold h5">AI Crop Recommendation</h4>
-                                <p class="text-muted small">Input your soil NPK, pH, temperature, and rainfall to instantly discover the most profitable crop to cultivate.</p>
+                                <h4 class="fw-bold h5">AI Fertilizer Recommendation</h4>
+                                <p class="text-muted small">Input your soil NPK, pH, temperature, and rainfall to instantly discover the most profitable fertilizer to use.</p>
                             </div>
                         </div>
                     </div>
@@ -133,25 +378,38 @@
 
         <div class="row g-4">
             <!-- Product 1 -->
-             {% for p in myproducts %}
+             {% for p in myproducts|slice:4 %}
             <div class="col-md-3">
                 <div class="card h-100 shadow-sm">
-                    <img class="card-img-top" src="./static/frontend/assets/images/{{p.4}}" alt="Urea">
+                    <img class="card-img-top" src="/static/product_img/{{p.4}}" alt="Urea">
                     <div class="card-body d-flex flex-column">
                         <h4 class="card-title">{{p.1}}</h4>
-                        <p class="card-text text-success fw-bold">Rs. {{p.2}}</p>
+                        <p class="card-text text-success fw-bold">Rs  {{p.2}}</p>
                         <div class="mb-3">
                             <label class="form-label text-muted small">Quantity:</label>
                             <input type="number" class="form-control" name="qty" min="1" value="1" />
                         </div>
-                        <a href="#" class="btn btn-success mt-auto">Add to Cart</a>
+                        
+                          <form action="/addtocart/" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="productid" value="{{p.0}}">
+                            <input type="hidden" name="price" value="{{p.2}}">
+                            <p><input type="number" hidden name="qty" value="1" min="1"></p>
+                            {% if request.session.custid %}
+                            <button type="submit" class="btn btn-success w-100">Add to Cart</button>
+                            {% else %}
+                            <button type="button" class="btn btn-success w-100 auth-required" data-bs-toggle="modal" data-bs-target="#login">
+                             Add to Cart
+                            </button>
+                             {% endif %}
+                        </form>
                     </div>
                 </div>
             </div>
             {% endfor %}
 
             <!-- Product 2 -->
-           
+
 
             <!-- Product 3 -->
            
@@ -159,35 +417,13 @@
             <!-- Product 4: MOP -->
             
         </div>
-        <div class="view-all"><a href="#marketplace">View all></a></div>
+        <div class="view-all">{% if request.session.custid %}
+        <a href="/marketplace/">View all ></a>
+    {% else %}
+        <a href="#" class="auth-required" data-bs-toggle="modal" data-bs-target="#login">View all ></a>
+    {% endif %}</div>
     </div>
 
-    <!-- Crop AI banner -->
-
-    <div class="container cropai-banner p-5 my-5 border rounded-4 shadow-sm">
-        <div class="row align-items-center h-100">
-            <div class="col-lg-7 mb-4 mb-lg-0">
-                <span class="badge cropai-banner-heading px-3 py-2 mb-3 rounded-pill text-uppercase fw-bold"><i class="bi bi-cpu me-1"></i>AI Powered Crop Analysis</span>
-                <h2 class="display-6 fw-bold text-dark mb-3">Smart Crop & Soil Analysis</h2>
-                <p class="cropai-banner-text text-muted lead mb-4">Unsure about which plant will grow better? Upload your Soil lab test report or enter manually to get instant, AI driven recommendations.</p>
-            </div>
-            <div class="col-lg-5 text-center">
-                <div class="bg-white p-4 rounded-4 shadow-sm border border-success border-opacity-25">
-                    <div class="mb-3">
-                    <i class="bi bi-file-earmark-spreadsheet text-success display-4"></i>
-                </div>
-                <h5 class="fw-bold text-dark">Instant Soil Intelligence</h5>
-                <p class="text-muted small mb-3">Analyzes Nitrogen, Phosphorus, Potassium (NPK), pH balance, and local weather patterns.</p>
-                <!-- <div class="badge bg-success bg-opacity-20 text-success px-3 py-2 rounded-pill">
-                    <i class="bi bi-check-circle-fill me-1"></i> 95% Prediction Accuracy
-                </div> -->
-                <a href="./cropAI.HTML" data-bs-toggle="modal" class="btn btn-success btn-lg px-4 py-3 shadow-sm d-flex text-center align-items-center justify-content-center">
-                    <i class="bi bi-cloud-arrow-up-fill me-2 fs-5"></i> Upload Soil Report or Enter Details Manually
-                </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Feertilizer Calculator Banner -->
 
@@ -206,7 +442,7 @@
                         </svg>
                     </div>
                     <p class="text-muted small mb-3">From instant AI Calculation to your doorstep in just one tap.</p>
-                    <a href="./fertilizer.html" data-bs-toggle="modal" class="btn btn-success btn-lg px-4 py-3 shadow-sm d-flex text-center align-items-center justify-content-center">
+                    <a href="./prediction/" data-bs-toggle="modal" class="btn btn-success btn-lg px-4 py-3 shadow-sm d-flex text-center align-items-center justify-content-center">
                     <i class="bi bi-bookmark-check-fill me-2 fs-5"></i>Calculate which is best for you
                     </a>
                 </div>
@@ -242,7 +478,7 @@
                 
                 <div class="d-flex flex-wrap justify-content-center">
                     <a href="./chat.html" data-bs-toggle="modal" class="btn btn-dark btn-lg rounded-pill px-3 py-3 shadow d-flex text-center align-items-center justify-content-center fw-bold">
-                        <i class="bi bi-chat-dots-fill text-warning me-2 fs-5"></i>Start Chatting Now!
+                        <i class="bi bi-chat-dots-fill text-warning me-2 fs-5"></i>Start Chat Now!
                     </a>
                 </div>
             </div>
@@ -250,47 +486,297 @@
     </div>
 </div>
      <!-- Weather Banner -->
-
-    <div class="container weather-banner p-5 my-4 border rounded-4 shadow-sm">
-        <div class="weather-card shadow-sm border-0 rounded-4 overflow-hidden">
-            <div class="weather-card-body p-4 p-md-5">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 mb-3 mb-lg-0 text-center text-lg-start">
-                            <span class="badge detect-location-badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2 fw-semibold border border-success border-opacity-25 shadow-sm mb-3 me-2"><i class="bi bi-geo-alt-fill"></i>
-                            Detecting Location...</span>
-                        <h2 class="display-6 fw-bold text-dark mb-3">Field Weather Dashboard</h2>
-                        <p class="cropai-banner-text text-muted lead mb-4">Fetching live meteorological data for optimized farming...</p>
+    <div class="container weather-banner p-5 my-4 border rounded-4 shadow-sm" id="weather">
+    {% if request.session.custid %}
+    <div class="weather-card shadow-sm border-0 rounded-4 overflow-hidden">
+        {% if weather %}
+        <div class="weather-card-body p-4 p-md-5">
+            <div class="row align-items-center">
+                <div class="col-lg-7 mb-3 mb-lg-0 text-center text-lg-start">
+                    <span class="badge detect-location-badge rounded-pill bg-success bg-opacity-10 text-success px-3 py-2 fw-semibold border border-success border-opacity-25 shadow-sm mb-3 me-2">
+                        <i class="bi bi-geo-alt-fill"></i> {{ weather.city }}, {{ weather.region }}
+                    </span>
+                    <h2 class="display-6 fw-bold text-dark mb-3">Field Weather Dashboard</h2>
+                    <p class="cropai-banner-text text-muted lead mb-2">
+                        Live meteorological data for your saved pincode to optimize crop and fertilizer planning.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 text-muted small fw-semibold mt-3">
+                        <span><i class="bi bi-droplet-fill text-primary"></i> Humidity: {{ weather.humidity }}%</span>
+                        <span><i class="bi bi-wind text-success"></i> Wind: {{ weather.wind_kph }} km/h</span>
+                        <span><i class="bi bi-cloud-rain-fill text-info"></i> Precipitation: {{ weather.precip_mm }} mm</span>
                     </div>
+                </div>
 
-                    <div class="col-lg-5 text-center">
-                        <div class="bg-white p-4 rounded-4 shadow-sm border border-success border-opacity-25">
-                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 120 120">
-                                <path d="M65.5,28h-11V10h11V28z M65.5,99h-11v18h11V99z M109.082,41.513l-5.5-9.526l-15.588,9l5.5,9.526 L109.082,41.513z M32.006,86.013l-5.5-9.526l-15.588,9l5.5,9.526L32.006,86.013z M26.506,50.513l5.5-9.526l-15.588-9l-5.5,9.526 L26.506,50.513z M103.582,95.013l5.5-9.526l-15.588-9l-5.5,9.526L103.582,95.013z M91.513,19.918l-9.526-5.5l-9,15.588l9.526,5.5 L91.513,19.918z M48.767,93.533l-9.526-5.5l-10.754,19.049l9.526,5.5L48.767,93.533z M37.487,35.506l9.526-5.5l-9-15.588 l-9.526,5.5L37.487,35.506z M81.987,112.582l9.526-5.5L81.312,89.414l-9.526,5.5L81.987,112.582z M113.5,69V58h-18v11H113.5z M24.5,69V58h-18v11H24.5z" opacity=".35"></path><path fill="#ffa400" d="M65.5,24h-11V6h11V24z M65.5,95h-11v18h11V95z M109.082,37.513l-5.5-9.526l-15.588,9l5.5,9.526 L109.082,37.513z M32.006,82.013l-5.5-9.526l-15.588,9l5.5,9.526L32.006,82.013z M26.506,46.513l5.5-9.526l-15.588-9l-5.5,9.526 L26.506,46.513z M103.582,91.013l5.5-9.526l-15.588-9l-5.5,9.526L103.582,91.013z M91.513,15.918l-9.526-5.5l-9,15.588l9.526,5.5 L91.513,15.918z M47.013,92.994l-9.526-5.5l-9,15.588l9.526,5.5L47.013,92.994z M37.487,31.506l9.526-5.5l-9-15.588l-9.526,5.5 L37.487,31.506z M81.987,108.582l9.526-5.5l-9-15.588l-9.526,5.5L81.987,108.582z M113.5,65V54h-18v11H113.5z M24.5,65V54h-18v11 H24.5z"></path><ellipse cx="60" cy="63.517" opacity=".35" rx="38" ry="38.5"></ellipse><ellipse cx="60" cy="59.517" fill="#ffc400" rx="38" ry="38.5"></ellipse>
-                            </svg>
-                            <div class="text-start text-center">
-                                <h2 class="mb-0 fw-bold text-dark" id="weather-temp">--°C</h2>
-                                <p class="text-muted small mb-0 fw-semibold" id="weather-condition">Loading conditions...</p>
-                            </div>
+                <div class="col-lg-5 text-center">
+                    <div class="bg-white weather-card-icon-body p-4 rounded-4 shadow-sm border border-success border-opacity-25" >
+                        <img src="https:{{ weather.icon }}" alt="Weather symbol for {{ weather.condition }} in the local weather dashboard" class="mb-2 weatehr-icon" style="width: 80px; height: 80px;">
+                        <div class="text-center">
+                            <h2 class="mb-0 fw-bold text-dark" id="weather-temp">{{ weather.temp_c }}°C</h2>
+                            <p class="text-muted small mb-0 fw-semibold" id="weather-condition">{{ weather.condition }}</p>
+                            <p class="text-muted small mb-0 fw-semibold" id="weather-feels-like">Feels like: {{ weather.temp_c }}°C</p>
+                            <p class="text-muted small mb-0 fw-semibold" id="weather-rain-chance">Rain Chance: {{ weather.rain_chance }}%</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
         </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="text-center py-3">
+        <h4 class="fw-bold text-dark mb-2">Field Weather Dashboard</h4>
+        <p class="text-muted mb-0">Log in with your saved pincode to view live local weather conditions.</p>
+    </div>
+    {% endif %}
+</div>
+
+
+    <!-- Crop AI banner -->
+
+    <div class="container cropai-banner p-5 my-5 border rounded-4 shadow-sm">
+        <div class="row align-items-center h-100">
+            <div class="col-lg-7 mb-4 mb-lg-0">
+                <span class="badge cropai-banner-heading px-3 py-2 mb-3 rounded-pill text-uppercase fw-bold"><i class="bi bi-cpu me-1"></i>AI Powered Crop Analysis</span>
+                <h2 class="display-6 fw-bold text-dark mb-3">Smart Crop & Soil Analysis </h2>
+                <h4 class="display-6 fw-bold text-success mb-3">Coming Soon!!</h4>
+                <p class="cropai-banner-text text-muted lead mb-4">Unsure about which plant will grow better? Upload your Soil lab test report or enter manually to get instant, AI driven recommendations.</p>
+            </div>
+            <div class="col-lg-5 text-center">
+                <div class="bg-white p-4 rounded-4 shadow-sm border border-success border-opacity-25">
+                    <div class="mb-3">
+                    <i class="bi bi-file-earmark-spreadsheet text-success display-4"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Instant Soil Intelligence</h5>
+                <p class="text-muted small mb-3">Analyzes Nitrogen, Phosphorus, Potassium (NPK), pH balance, and local weather patterns.</p>
+                 <!-- <div class="badge bg-success bg-opacity-20 text-success px-3 py-2 rounded-pill">
+                    <i class="bi bi-check-circle-fill me-1"></i> 95% Prediction Accuracy
+                </div> -->
+                <p class=" bg-success bg-lg px-4 py-3 shadow-sm d-flex text-center align-items-center justify-content-center fw-bold rounded-4 text-white ">
+                    <i class="bi bi-cloud-arrow-up-fill me-2 fs-5"></i> Coming Soon! Upload Soil Report
+                </p>
+                </div>
+            </div>
         </div>
     </div>
-
 
    
 </body>
 
  <!-- Footer Part -->
    
-<footer class="py-4 text-center">
+<footer class="footer mt-auto py-3 bg-1 text-center">
         <div class="container">
             <p class="mb-1 fw-semibold">&copy; 2026 HarvestHub - Your AI Harvesting Companion. All rights reserved.</p>
             <p class="small mb-0">Empowering sustainable farming through intelligent technologies.</p>
         </div>
 </footer>
+
+<div class="modal" id="login">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h4 class="modal-title">Login to your account</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="loginForm" action="{% url 'logincust' %}" method="post" novalidate>
+          {% csrf_token %}
+          
+        <!-- Email Field -->
+        <div class="mb-3">
+            <label for="emailInput" class="form-label fw-bold">Email address</label>
+        <div class="position-relative">
+            <input type="email" class="form-control pe-5" id="emailInput" name="custemail" placeholder="Enter your email" spellcheck="false" required>
+            <!-- Clean Bootstrap 'X' centered INSIDE the right edge of the input -->
+            <button type="button" id="clearEmail" class="btn-close position-absolute top-50 end-0 translate-middle-y me-2 d-none" style="font-size: 0.7rem;" aria-label="Clear email"></button>
+        </div>
+            <!-- Inline red (!) error -->
+        <div id="email-error" class="text-danger small d-none mt-1 d-flex align-items-center gap-1">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span id="email-error-text">Invalid email address</span>
+        </div>
+        </div>
+
+          <!-- Password Field -->
+          <div class="mb-3">
+            <label for="passwordInput" class="form-label fw-bold">Password</label>
+            <input type="password" class="form-control" id="passwordInput" name="custpassword" placeholder="Enter your password" required>
+            <div id="password-error" class="inline-error d-none mt-1">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span id="password-error-text">Invalid email or password</span>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-success">Sign In</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <p class="mb-0 text-muted">
+          Don't have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#sign-up" class="text-success text-decoration-none fw-bold">Register here</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="sign-up">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Sign Up</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form id="regForm" action="/regcust/" method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- Customer First Name -->
+          <div class="mb-3">
+            <label for="custfirstname" class="form-label">First Name</label>
+            <input type="text"
+                   class="form-control"
+                   id="custfirstname"
+                   name="custfirstname"
+                   maxlength="250"
+                   placeholder="Enter first name"
+                   required>
+          </div>
+
+          <!-- Customer Last Name -->
+          <div class="mb-3">
+            <label for="custlastname" class="form-label">Last Name</label>
+            <input type="text"
+                   class="form-control"
+                   id="custlastname"
+                   name="custlastname"
+                   maxlength="250"
+                   placeholder="Enter last name"
+                   required>
+          </div>
+
+          <!-- Customer Email -->
+          <div class="mb-3">
+            <label for="custemail" class="form-label">Customer Email</label>
+            <input type="email"
+                   class="form-control"
+                   id="custemail"
+                   name="custemail"
+                   placeholder="Enter email address"
+                   spellcheck="false"
+                   required>
+            <!-- Red (!) inline error for duplicate/invalid email -->
+            <div id="reg-email-error" class="text-danger small d-none mt-1 align-items-center gap-1">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span id="reg-email-error-text"></span>
+            </div>
+          </div>
+
+          <!-- Customer Phone -->
+          <div class="mb-3">
+            <label for="custphone" class="form-label">Customer Phone</label>
+            <input type="text"
+                   class="form-control"
+                   id="custphone"
+                   name="custphone"
+                   placeholder="Enter phone number"
+                   required>
+            <!-- Red (!) inline error for duplicate phone -->
+            <div id="reg-phone-error" class="text-danger small d-none mt-1 align-items-center gap-1">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span id="reg-phone-error-text"></span>
+            </div>
+          </div>
+
+          <!-- Customer Password -->
+          <div class="mb-3">
+            <label for="custpassword" class="form-label">Password</label>
+            <input type="password"
+                   class="form-control"
+                   id="custpassword"
+                   name="custpassword"
+                   placeholder="Enter password"
+                   required>
+          </div>
+
+          <!-- Address -->
+          <!-- Pincode (Triggers auto-fill at 6 digits) -->
+<div class="mb-3">
+  <label for="custpincode" class="form-label">Pincode</label>
+  <input type="text"
+         class="form-control"
+         id="custpincode"
+         name="custpincode"
+         maxlength="6"
+         pattern="\d{6}"
+         placeholder="Enter 6-digit pincode"
+         required>
+  <div id="pincode-status" class="small mt-1 d-none"></div>
+</div>
+
+<!-- City & State (Auto-filled from Pincode, still editable) -->
+<div class="row">
+  <div class="col-md-6 mb-3">
+    <label for="custcity" class="form-label">City</label>
+    <input type="text"
+           class="form-control"
+           id="custcity"
+           name="custcity"
+           placeholder="City"
+           required>
+  </div>
+  <div class="col-md-6 mb-3">
+    <label for="custstate" class="form-label">State</label>
+    <input type="text"
+           class="form-control"
+           id="custstate"
+           name="custstate"
+           placeholder="State"
+           required>
+  </div>
+</div>
+
+<!-- Street / Village / House No. -->
+<div class="mb-3">
+  <label for="address" class="form-label">Village / Street / House No.</label>
+  <textarea class="form-control"
+            id="address"
+            name="address"
+            rows="2"
+            placeholder="Enter village, street, or landmark"
+            required></textarea>
+</div>
+
+          <!-- Submit Button -->
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success">
+              Register
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal footer (moved outside <form> and fixed #Login -> #login) -->
+      <div class="modal-footer">
+        <p class="mb-0 text-muted">
+          Already have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#login" class="text-success text-decoration-none fw-bold">Login here</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script src='https://www.noupe.com/embed/01a20c740db070008040fd1a99c8effe89d5.js'></script>
+
+
 </html>

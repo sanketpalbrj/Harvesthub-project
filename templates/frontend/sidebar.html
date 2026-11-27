@@ -1,0 +1,33 @@
+{% load static %}
+
+<aside class="market-sidebar d-flex flex-column flex-shrink-0 p-3 text-white">
+    <div class=" d-flex align-items-center justify-content-between mb-2 px-2">
+        <span class="fs-6 fw-bold text-uppercase text-white">
+            <i class="bi bi-grid-fill me-2"></i>Categories
+        </span>
+    </div>
+
+    <hr class="border-light opacity-25 my-2">
+
+    <ul class="nav nav-pills flex-column mb-auto gap-1">
+        <!-- All Products -->
+        <li class="nav-item">
+            <a href="/marketplace/" class="nav-link {% if not selected_cat %}active{% endif %}">
+                <span>All Products</span>
+            </a>
+        </li>
+
+        <!-- Dynamic Categories from Database -->
+        {% for cat in categories %}
+        <li class="nav-item">
+            <a href="/marketplace/?cat={{ cat.0 }}" class="nav-link {% if selected_cat == cat.0|stringformat:'s' %}active{% endif %}">
+                <span>{{ cat.1 }}</span>
+            </a>
+        </li>
+        {% empty %}
+        <li class="nav-item">
+            <span class="nav-link text-white-50 small">No categories available</span>
+        </li>
+        {% endfor %}
+    </ul>
+</aside>
