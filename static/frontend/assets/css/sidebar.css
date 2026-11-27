@@ -1,0 +1,56 @@
+.market-wrapper {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch;
+        flex: 1;
+        padding-top: 72px;
+    }
+
+    .market-sidebar {
+        width: 260px !important;
+        min-width: 260px !important;
+        min-height: calc(100vh - 72px);
+        background: linear-gradient(180deg, #14532d 0%, #166534 65%, #15803d 100%) !important;
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.12);
+        position: sticky;
+        top: 72px;
+        height: calc(100vh - 72px);
+        overflow-y: auto;
+    }
+
+    .market-sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    .market-sidebar .nav-link:hover {
+        color: #ffffff !important;
+        background-color: rgba(255, 255, 255, 0.14) !important;
+        border-left-color: #facc15;
+    }
+
+    /* Overrides Bootstrap's blue .nav-pills .active */
+    .market-sidebar .nav-pills .nav-link.active,
+    .market-sidebar .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.22) !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        border-left: 4px solid #facc15;
+    }
+
+    @media (max-width: 767.98px) {
+        .market-wrapper {
+            flex-direction: column !important;
+        }
+        .market-sidebar {
+            width: 100% !important;
+            min-width: 100% !important;
+            height: auto;
+            min-height: auto;
+            position: static;
+        }
+    }

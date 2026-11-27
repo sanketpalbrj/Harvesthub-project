@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertilizer Prediction - HarvestHub</title>
+   <!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Latest compiled JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="/static/frontend/assets/css/style.css" rel="stylesheet">
+</head>
+<script>
+    function openNoupeChat(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    const chatBtn = document.querySelector('.noupe-chat-button');
+    if (chatBtn) {
+        chatBtn.click();
+    } else {
+        console.warn("Noupe chat button is still loading.");
+    }
+    // Watch for Noupe's dynamically injected widget and push it above the fixed footer
+}
+</script>
+<body>
+     <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-decoration-none" href="/" onclick="showSection('home')">
+                    <i class="bi bi-wheat fs-3 text-warning"></i>
+                    <span class="tracking-tight text-white">HarvestHub</span>
+                    <span class="badge bg-warning text-dark text-uppercase ms-1" style="font-size: 0.65rem;">AI Companion</span>
+                </a>
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#harvestNavbar" aria-controls="harvestNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="harvestNavbar">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-home" href="/" onclick="showSection('home')"> Home</a>
+                        </li>
+                        <!--<li class="nav-item">
+                            <a class="nav-link" id="nav-crop" href="./cropAi.HTML"> Crop AI</a>
+                        </li>-->
+                        <li class="nav-item">
+                            <a class="nav-link active" id="nav-fertilizer" href="/prediction/" onclick="showSection('fertilizer')"></i> Fertilizer Calculator</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link auth-required" id="nav-marketplace" href="/marketplace/" onclick="showSection('marketplace')"> Marketplace</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-chat" href="javascript:void(0)" onclick="openNoupeChat(event)">Chat with AI</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle auth-required" href="#" id="nav-weather" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <i class="bi bi-cloud-sun"></i> Field Weather
+                            </a>
+                            <!-- Hanging Weather Panel -->
+                            <div class="dropdown-menu dropdown-menu-end p-0 border-0 shadow-lg weather-hang-panel" aria-labelledby="nav-weather">
+                                {% if request.session.custid %}
+                                {% if weather %}
+                                <div class="weather-card bg-white">
+                                    <!-- Top Header Bar -->
+                                     <div class="px-3 py-2 bg-success bg-opacity-10 border-bottom border-success border-opacity-25 d-flex justify-content-between align-items-center">
+                                        <span class="badge rounded-pill bg-white text-success px-2 py-1 fw-semibold border border-success border-opacity-25 shadow-sm">
+                                            <i class="bi bi-geo-alt-fill"></i> {{ weather.city }}, {{ weather.region }}
+                                        </span>
+                                        <span class="small fw-semibold text-success">Live</span>
+                                    </div>
+                                    <!-- Main Weather Body -->
+                                     <div class="p-3">
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <div>
+                                                <h2 class="mb-0 fw-bold text-dark" id="weather-temp">{{ weather.temp_c }}°C</h2>
+                                                <p class="text-muted small mb-0 fw-semibold" id="weather-condition">{{ weather.condition }}</p>
+                                                <p class="text-muted small mb-0" id="weather-feels-like">Feels like: {{ weather.temp_c }}°C</p>
+                                            </div>
+                                            <div class="bg-light p-2 rounded-4 border border-success border-opacity-25 text-center">
+                                                <img src="https:{{ weather.icon }}" alt="{{ weather.condition }}" class="weather-icon" style="width: 64px; height: 64px;">
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 text-center border-top pt-2 small fw-semibold text-muted">
+                                            <div class="col-6 text-start">
+                                                <i class="bi bi-droplet-fill text-primary"></i> Humidity: <span class="text-dark">{{ weather.humidity }}%</span>
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                <i class="bi bi-cloud-rain-fill text-info"></i> Rain: <span class="text-dark">{{ weather.rain_chance }}%</span>
+                                            </div>
+                                            <div class="col-6 text-start">
+                                                <i class="bi bi-wind text-success"></i> Wind: <span class="text-dark">{{ weather.wind_kph }} km/h</span>
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                <i class="bi bi-umbrella-fill text-secondary"></i> Precip: <span class="text-dark">{{ weather.precip_mm }} mm</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="p-4 text-center">
+                                    <p class="text-muted small mb-0">Weather data unavailable for your pincode.</p>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center ms-lg-3 gap-2 mt-2 mt-lg-0">
+                        <!-- Cart Trigger Button -->
+                        <a href="/cart/" class="btn btn-warning text-dark fw-bold position-relative px-3 py-2 shadow-sm auth-required"><i class="bi bi-cart3 fs-5"></i>
+                            <!-- <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ cart_count|default:0 }}
+                            </span> -->
+                        </a>
+                        <!-- Profile Modal Trigger Button -->
+                        {% if request.session.custid %}
+                        <!-- Logged in state: Flat button showing user's name + a separate logout link/button -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light fw-bold d-flex align-items-center gap-2" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> {{ request.session.custname }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2" href="/myorders/">
+                                        <i class="bi bi-bag-check me-2 text-success"></i> My Orders
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger fw-semibold" href="/clogout/">
+                                        <i class="bi bi-power me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% else %}
+                        <!-- Profile Modal Trigger Button -->
+                        <button class="btn btn-outline-light px-3 py-2 fw-medium" type="button" data-bs-toggle="modal" data-bs-target="#login">
+                            <i class="bi bi-person-circle me-1"></i> Login/Register
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container main">
+
+    <form action="/analyze/" method="POST">
+
+
+{% csrf_token %}
+
+            <label class="form-label">Crop Type</label>
+         <select name="Crop_Type" class="form-select mb-3" required>
+    <option value="">Select Crop Type</option>
+    <option value="0">Barley</option>
+    <option value="1">Cotton</option>
+    <option value="2">Ground Nuts</option>
+    <option value="3">Maize</option>
+    <option value="4">Millets</option>
+    <option value="5">Oil seeds</option>
+    <option value="6">Paddy</option>
+    <option value="7">Pulses</option>
+    <option value="8">Sugarcane</option>
+    <option value="9">Tobacco</option>
+    <option value="10">Wheat</option>
+    <option value="11">coffee</option>
+    <option value="12">kidneybeans</option>
+    <option value="13">orange</option>
+    <option value="14">pomegranate</option>
+    <option value="15">rice</option>
+    <option value="16">watermelon</option>
+</select>
+
+            <label class="form-label">Soil Type</label>
+           <select name="Soil_Type" class="form-select mb-3" required>
+    <option value="">Select Soil Type</option>
+    <option value="0">Black</option>
+    <option value="1">Clayey</option>
+    <option value="2">Loamy</option>
+    <option value="3">Red</option>
+    <option value="4">Sandy</option>
+</select>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Nitrogen (N)</label>
+                    <input type="number" step="any" name="Nitrogen"
+                           class="form-control mb-3" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Phosphorous (P)</label>
+                    <input type="number" step="any" name="Phosphorous"
+                           class="form-control mb-3" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Potassium (K)</label>
+                    <input type="number" step="any" name="Potassium"
+                           class="form-control mb-3" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Temperature</label>
+                    <input type="number" step="any" name="Temparature"
+                           class="form-control mb-3" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Humidity</label>
+                    <input type="number" step="any" name="Humidity"
+                           class="form-control mb-3" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Moisture</label>
+                    <input type="number" step="any" name="Moisture"
+                           class="form-control mb-3" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mt-3">
+                Recommend Fertilizer
+            </button>
+</form>
+
+<form action="/analyze/" method="POST">
+</div>
+</div>
+
+<footer class="footer fixed-bottom mt-auto py-3 bg-1 text-center">
+        <div class="container">
+            <p class="mb-1 fw-semibold">&copy; 2026 HarvestHub - Your AI Harvesting Companion. All rights reserved.</p>
+            <p class="small mb-0">Empowering sustainable farming through intelligent technologies.</p>
+        </div>
+</footer>
+
+<div class="modal" id="reg">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Sign Up</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form action="/regcust/" method="post">
+          {% csrf_token  %}
+
+                            <!-- Customer Name -->
+                            <div class="mb-3">
+                                <label for="custname" class="form-label">
+                                    Customer Name
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="custname"
+                                       name="custname"
+                                       maxlength="500"
+                                       placeholder="Enter customer name"
+                                       required>
+                            </div>
+
+                            <!-- Customer Email -->
+                            <div class="mb-3">
+                                <label for="custemail" class="form-label">
+                                    Customer Email
+                                </label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="custemail"
+                                       name="custemail"
+                                       placeholder="Enter email address"
+                                       required>
+                            </div>
+
+                            <!-- Customer Phone -->
+                            <div class="mb-3">
+                                <label for="custphone" class="form-label">
+                                    Customer Phone
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="custphone"
+                                       name="custphone"
+                                       placeholder="Enter phone number"
+                                       required>
+                            </div>
+
+                            <!-- Customer Password -->
+                            <div class="mb-3">
+                                <label for="custpassword" class="form-label">
+                                    Password
+                                </label>
+                                <input type="password"
+                                       class="form-control"
+                                       id="custpassword"
+                                       name="custpassword"
+                                       placeholder="Enter password"
+                                       required>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="mb-3">
+                                <label for="address" class="form-label">
+                                    Address
+                                </label>
+                                <textarea class="form-control"
+                                          id="address"
+                                          name="address"
+                                          rows="3"
+                                          placeholder="Enter your address"
+                                          required></textarea>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    Register
+                                </button>
+
+                                <button type="reset" class="btn btn-secondary">
+                                    Cancel
+                                </button>
+                            </div>
+
+                        </form>
+    
+    
+                      </div>
+
+    
+
+    
+    
+                    </div>
+  </div>
+</div>
+
+<div class="modal" id="login">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Sign In</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form action="/custlogin/" method="post">
+          {% csrf_token  %}
+
+                            <!-- Customer Name -->
+                           
+                            <!-- Customer Email -->
+                            <div class="mb-3">
+                                <label for="custemail" class="form-label">
+                                    Customer Email
+                                </label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="custemail"
+                                       name="custemail"
+                                       placeholder="Enter email address"
+                                       required>
+                            </div>
+
+                            <!-- Customer Password -->
+                            <div class="mb-3">
+                                <label for="custpassword" class="form-label">
+                                    Password
+                                </label>
+                                <input type="password"
+                                       class="form-control"
+                                       id="custpassword"
+                                       name="custpassword"
+                                       placeholder="Enter password"
+                                       required>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    Login
+                                </button>
+
+                            </div>
+
+                        </form>
+                      </div>   
+                    </div>
+  </div>
+</div>
+<script src='https://www.noupe.com/embed/01a20c740db070008040fd1a99c8effe89d5.js'></script>
+</body>
+
+</html> 

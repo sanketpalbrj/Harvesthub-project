@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Order #HHM{{ order.0 }} - HarvestHub Admin</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        {% include 'inc/sidebar.html' %}
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                {% include 'inc/top.html' %}
+                <!-- End of Topbar -->
+
+                <div class="container-fluid">
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Order Details (#HHM{{ order.0 }})</h1>
+                        <a href="/pendingorders/" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Back to Orders
+                        </a>
+                    </div>
+
+                    <div class="row">
+                        <!-- Customer Info & Status Update -->
+                        <div class="col-lg-5">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                    <h6 class="m-0 font-weight-bold text-primary">Delivery & Account Details</h6>
+                                    <span class="badge badge-info">{{ order.9 }}</span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-2"><strong>Deliver To:</strong> {{ order.1 }} {{ order.2 }}</p>
+                                    <p class="mb-2"><strong>Recipient Phone:</strong> {{ order.4 }}</p>
+                                    <p class="mb-2"><strong>Shipping Address:</strong> {{ order.5 }}</p>
+                                    <hr>
+                                    <p class="mb-2 text-muted small"><strong>Ordered By (Account):</strong> {{ order.10 }}</p>
+                                    <p class="mb-2 text-muted small"><strong>Account Email:</strong> {{ order.3 }}</p>
+                                    <p class="mb-0 text-muted small"><strong>Order Date:</strong> {{ order.6 }}</p>
+                                    <hr>
+                                    <form action="/updateorderstatus/" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="order_id" value="{{ order.0 }}">
+                                        <div class="form-group">
+                                            <label class="font-weight-bold">Update Order Status</label>
+                                            <select name="order_status" class="form-control">
+                                                <option value="Pending" {% if order.8 == 'Pending' %}selected{% endif %}>Pending</option>
+                                                <option value="Shipped" {% if order.8 == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Delivered" {% if order.8 == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Cancelled" {% if order.8 == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-success btn-block">
+                                            Update Status
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ordered Products -->
+                        <div class="col-lg-7">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Ordered Items</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Image</th>
+                                                    <th>Product</th>
+                                                    <th>Price</th>
+                                                    <th>Qty</th>
+                                                    <th>Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in items %}
+                                                <tr>
+                                                    <td><img src="/static/product_img/{{ item.2 }}" width="50" height="50" style="object-fit: cover;"></td>
+                                                    <td>{{ item.1 }}</td>
+                                                    <td>₹{{ item.3 }}</td>
+                                                    <td>{{ item.4 }}</td>
+                                                    <td>₹{% widthratio item.3 1 item.4 %}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="4" class="text-right">Grand Total:</th>
+                                                    <th class="text-success">₹{{ order.7 }}</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of Main Content -->
+
+            {% include 'inc/footer.html' %}
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+</body>
+
+</html>

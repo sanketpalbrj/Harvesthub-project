@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - HarvestHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="/static/frontend/assets/css/style.css" rel="stylesheet">
+</head>
+<script>
+    function openNoupeChat(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    const chatBtn = document.querySelector('.noupe-chat-button');
+    if (chatBtn) {
+        chatBtn.click();
+    } else {
+        console.warn("Noupe chat button is still loading.");
+    }
+    // Watch for Noupe's dynamically injected widget and push it above the fixed footer
+}
+</script>
+<body class="bg-light d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-decoration-none" href="/">
+                    <i class="bi bi-wheat fs-3 text-warning"></i>
+                    <span class="tracking-tight text-white">HarvestHub</span>
+                    <span class="badge bg-warning text-dark text-uppercase ms-1" style="font-size: 0.65rem;">AI Companion</span>
+                </a>
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#harvestNavbar" aria-controls="harvestNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="harvestNavbar">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-home" href="/">Home</a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link" id="nav-crop" href="/cropAi.HTML">Crop AI</a>
+                        </li> -->
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-fertilizer" href="/prediction/">Fertilizer Calculator</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-marketplace" href="/marketplace/">Marketplace</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="nav-chat" href="javascript:void(0)" onclick="openNoupeChat(event)">Chat with AI</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle auth-required" href="#" id="nav-weather" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <i class="bi bi-cloud-sun"></i> Field Weather
+                            </a>
+                            <!-- Hanging Weather Panel -->
+                            <div class="dropdown-menu dropdown-menu-end p-0 border-0 shadow-lg weather-hang-panel" aria-labelledby="nav-weather">
+                                {% if request.session.custid %}
+                                {% if weather %}
+                                <div class="weather-card bg-white">
+                                    <!-- Top Header Bar -->
+                                     <div class="px-3 py-2 bg-success bg-opacity-10 border-bottom border-success border-opacity-25 d-flex justify-content-between align-items-center">
+                                        <span class="badge rounded-pill bg-white text-success px-2 py-1 fw-semibold border border-success border-opacity-25 shadow-sm">
+                                            <i class="bi bi-geo-alt-fill"></i> {{ weather.city }}, {{ weather.region }}
+                                        </span>
+                                        <span class="small fw-semibold text-success">Live</span>
+                                    </div>
+                                    <!-- Main Weather Body -->
+                                     <div class="p-3">
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <div>
+                                                <h2 class="mb-0 fw-bold text-dark" id="weather-temp">{{ weather.temp_c }}°C</h2>
+                                                <p class="text-muted small mb-0 fw-semibold" id="weather-condition">{{ weather.condition }}</p>
+                                                <p class="text-muted small mb-0" id="weather-feels-like">Feels like: {{ weather.temp_c }}°C</p>
+                                            </div>
+                                            <div class="bg-light p-2 rounded-4 border border-success border-opacity-25 text-center">
+                                                <img src="https:{{ weather.icon }}" alt="{{ weather.condition }}" class="weather-icon" style="width: 64px; height: 64px;">
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 text-center border-top pt-2 small fw-semibold text-muted">
+                                            <div class="col-6 text-start">
+                                                <i class="bi bi-droplet-fill text-primary"></i> Humidity: <span class="text-dark">{{ weather.humidity }}%</span>
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                <i class="bi bi-cloud-rain-fill text-info"></i> Rain: <span class="text-dark">{{ weather.rain_chance }}%</span>
+                                            </div>
+                                            <div class="col-6 text-start">
+                                                <i class="bi bi-wind text-success"></i> Wind: <span class="text-dark">{{ weather.wind_kph }} km/h</span>
+                                            </div>
+                                            <div class="col-6 text-end">
+                                                <i class="bi bi-umbrella-fill text-secondary"></i> Precip: <span class="text-dark">{{ weather.precip_mm }} mm</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="p-4 text-center">
+                                    <p class="text-muted small mb-0">Weather data unavailable for your pincode.</p>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center ms-lg-3 gap-2 mt-2 mt-lg-0">
+                        <!-- <a href="/cart/" class="btn btn-warning text-dark fw-bold position-relative px-3 py-2 shadow-sm">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ mycart|length }}</span>
+                        </a> -->
+                        
+                        {% if request.session.custid %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light fw-bold d-flex align-items-center gap-2" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> {{ request.session.custname }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2" href="/myorders/">
+                                        <i class="bi bi-bag-check me-2 text-success"></i> My Orders
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 text-danger fw-semibold" href="/clogout/">
+                                        <i class="bi bi-power me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% else %}
+                        <button class="btn btn-outline-light px-3 py-2 fw-medium" type="button" data-bs-toggle="modal" data-bs-target="#login">
+                            <i class="bi bi-person-circle me-1"></i> Login/Register
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Checkout Section -->
+    <div class="container main flex-grow-1" style="margin-top: 100px; margin-bottom: 60px;">
+        <div class="row mb-4">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/cart/" class="text-success text-decoration-none">My Cart</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold"><i class="bi bi-bag-check text-success me-2"></i>Complete Your Order</h2>
+            </div>
+        </div>
+
+        <form action="/placeorder/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="total_amount" value="{{ grand_total }}">
+
+            <div class="row g-4">
+                <!-- Left Column: Delivery & Payment Info -->
+                <div class="col-lg-7">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-geo-alt text-success me-2"></i>Delivery Information</h5>
+                            
+                            <!-- Toggle: Order for someone else -->
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="orderForOther" name="order_for_other">
+                                <label class="form-check-label small fw-semibold text-success" for="orderForOther">
+                                    Ordering for someone else?
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <!-- Info banner shown when ordering for someone else -->
+                            <div id="recipient-notice" class="alert alert-success py-2 small d-none mb-3">
+                                <i class="bi bi-person-plus-fill me-1"></i> Enter the recipient's name, phone number, and delivery address below.
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Recipient First Name</label>
+                                    <input type="text" class="form-control" id="chk-fname" name="fname" value="{{ customer.0 }}" data-default="{{ customer.0 }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Recipient Last Name</label>
+                                    <input type="text" class="form-control" id="chk-lname" name="lname" value="{{ customer.1 }}" data-default="{{ customer.1 }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Email Address</label>
+                                    <input type="email" class="form-control" id="chk-email" name="email" value="{{ customer.2 }}" data-default="{{ customer.2 }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Recipient Phone Number</label>
+                                    <input type="text" class="form-control" id="chk-phone" name="phone" value="{{ customer.3 }}" data-default="{{ customer.3 }}" required>
+                                </div>
+
+                                <!-- Structured Address Fields -->
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Pincode</label>
+                                    <input type="text" class="form-control" id="chk-pincode" name="pincode" maxlength="6" pattern="\d{6}" value="{{ customer.5|default:'' }}" data-default="{{ customer.5|default:'' }}" placeholder="6-digit pincode" required>
+                                    <div id="chk-pincode-status" class="small mt-1 d-none"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">City / District</label>
+                                    <input type="text" class="form-control" id="chk-city" name="city" value="{{ customer.6|default:'' }}" data-default="{{ customer.6|default:'' }}" placeholder="City / District" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">State</label>
+                                    <input type="text" class="form-control" id="chk-state" name="state" value="{{ customer.7|default:'' }}" data-default="{{ customer.7|default:'' }}" placeholder="State" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Village / Street / Landmark</label>
+                                    <textarea class="form-control" id="chk-address" name="shipping_address" rows="2" data-default="{{ customer.4 }}" placeholder="Enter village, house no., or landmark" required>{{ customer.4 }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0 fw-bold"><i class="bi bi-credit-card text-success me-2"></i>Payment Method</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="form-check mb-3 p-3 border rounded bg-light">
+                                <input class="form-check-input ms-1" type="radio" name="payment_method" id="cod" value="COD" checked>
+                                <label class="form-check-label fw-bold ms-2" for="cod">
+                                    <i class="bi bi-cash-stack text-success me-1"></i> Cash on Delivery (COD)
+                                </label>
+                                <div class="small text-muted ms-4">Pay when your agricultural supplies arrive at your doorstep.</div>
+                            </div>
+                            <div class="form-check p-3 border rounded">
+                                <input class="form-check-input ms-1" type="radio" name="payment_method" id="upi" value="UPI">
+                                <label class="form-check-label fw-bold ms-2" for="upi">
+                                    <i class="bi bi-qr-code-scan text-primary me-1"></i> UPI / Net Banking
+                                </label>
+                                <div class="small text-muted ms-4">Instant payment via GPay, PhonePe, Paytm, or Bank Transfer.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Order Summary -->
+                <div class="col-lg-5">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">Order Summary</h5>
+                            <span class="badge bg-warning text-dark">{{ mycart|length }} Items</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <ul class="list-group list-group-flush mb-3">
+                                {% for item in mycart %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="/static/product_img/{{ item.6 }}" alt="{{ item.5 }}" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">{{ item.5 }}</h6>
+                                            <small class="text-muted">₹{{ item.3 }} × {{ item.4 }}</small>
+                                        </div>
+                                    </div>
+                                    <span class="fw-bold">₹{% widthratio item.3 1 item.4 %}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Subtotal</span>
+                                <span class="fw-semibold">₹{{ grand_total|floatformat:2 }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Delivery Charges</span>
+                                <span class="text-success fw-semibold">FREE</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <span class="fs-5 fw-bold">Total Payable</span>
+                                <span class="fs-4 fw-bold text-success">₹{{ grand_total|floatformat:2 }}</span>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm">
+                                    <i class="bi bi-check2-circle me-1"></i> Place Order
+                                </button>
+                                <a href="/cart/" class="btn btn-outline-secondary">
+                                    Back to Cart
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer Part -->
+    <footer class="py-4 text-center text-white mt-auto">
+        <div class="container">
+            <p class="mb-1 fw-semibold">© 2026 HarvestHub - Your AI Harvesting Companion. All rights reserved.</p>
+            <p class="small mb-0 text-white-50">Empowering sustainable farming through intelligent technologies.</p>
+        </div>
+    </footer>
+    <script src='https://www.noupe.com/embed/01a20c740db070008040fd1a99c8effe89d5.js'></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const orderForOther = document.getElementById("orderForOther");
+        const recipientNotice = document.getElementById("recipient-notice");
+
+        const fields = [
+            document.getElementById("chk-fname"),
+            document.getElementById("chk-lname"),
+            document.getElementById("chk-email"),
+            document.getElementById("chk-phone"),
+            document.getElementById("chk-pincode"),
+            document.getElementById("chk-city"),
+            document.getElementById("chk-state"),
+            document.getElementById("chk-address")
+        ];
+
+        // Toggle between own saved info and another recipient's info
+        orderForOther.addEventListener("change", function () {
+            if (this.checked) {
+                recipientNotice.classList.remove("d-none");
+                fields.forEach(f => {
+                    // Keep buyer's email pre-filled for order receipt, clear name/phone/address
+                    if (f.id !== "chk-email") f.value = "";
+                });
+                document.getElementById("chk-fname").focus();
+            } else {
+                recipientNotice.classList.add("d-none");
+                fields.forEach(f => {
+                    f.value = f.dataset.default || "";
+                    f.classList.remove("is-invalid");
+                });
+                document.getElementById("chk-pincode-status").classList.add("d-none");
+            }
+        });
+
+        // Auto-fill City & State when a 6-digit pincode is entered
+        const pincodeInput = document.getElementById("chk-pincode");
+        const cityInput = document.getElementById("chk-city");
+        const stateInput = document.getElementById("chk-state");
+        const pincodeStatus = document.getElementById("chk-pincode-status");
+
+        pincodeInput.addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "");
+            pincodeInput.classList.remove("is-invalid");
+            pincodeStatus.classList.add("d-none");
+
+            if (this.value.length === 6) {
+                pincodeStatus.textContent = "Fetching location...";
+                pincodeStatus.className = "small mt-1 text-muted";
+
+                fetch(`https://api.postalpincode.in/pincode/${this.value}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
+                            const po = data[0].PostOffice[0];
+                            cityInput.value = po.District;
+                            stateInput.value = po.State;
+                            pincodeStatus.classList.add("d-none");
+                        } else {
+                            cityInput.value = "";
+                            stateInput.value = "";
+                            pincodeInput.classList.add("is-invalid");
+                            pincodeStatus.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i> Invalid pincode';
+                            pincodeStatus.className = "small mt-1 text-danger d-flex align-items-center gap-1";
+                        }
+                    })
+                    .catch(() => pincodeStatus.classList.add("d-none"));
+            }
+        });
+    });
+    </script>
+</body>
+</html>
